@@ -13,4 +13,8 @@ public class Card {
     public CardType getCardType() {
         return cardType;
     }
+
+    public int getValue() {
+        return value;
+    }
 }

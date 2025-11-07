@@ -12,4 +12,8 @@ public class Player {
         this.name = new Name(name);
         this.hand = hand;
     }
+
+    public Hand getHand() {
+        return hand;
+    }
 }

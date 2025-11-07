@@ -73,13 +73,13 @@ public class Deck {
 
     private void createDoubleCard(List<Card> deck) {
         for (int repeat = 0; repeat < 4; repeat++) {
-            deck.add(new Card(CardType.DOUBLE, 0));
+            deck.add(new Card(CardType.DOUBLE, -1));
         }
     }
 
     private void createReverseCard(List<Card> deck) {
         for (int repeat = 0; repeat < 5; repeat++) {
-            deck.add(new Card(CardType.REVERSE, 0));
+            deck.add(new Card(CardType.REVERSE, -1));
         }
     }
 

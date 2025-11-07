@@ -19,4 +19,8 @@ public class Hand {
             throw new IllegalArgumentException(ExceptionMessage.HOLDING_CARD_OUT_OF_RANGE.getMessage());
         }
     }
+
+    public List<Card> getHoldingCards() {
+        return holdingCards;
+    }
 }
