@@ -9,4 +9,8 @@ public class Card {
         this.cardType = cardType;
         this.value = value;
     }
+
+    public CardType getCardType() {
+        return cardType;
+    }
 }

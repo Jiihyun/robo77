@@ -80,4 +80,8 @@ public class Deck {
             deck.add(new Card(CardType.REVERSE, 0));
         }
     }
+
+    public List<Card> getCards() {
+        return List.copyOf(cards);
+    }
 }
