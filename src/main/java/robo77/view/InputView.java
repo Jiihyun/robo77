@@ -20,4 +20,9 @@ public class InputView {
         writer.writeLine(message);
         return reader.readLine();
     }
+
+    public String readCardToSubmit() {
+        writer.writeLine("제출할 카드를 입력해주세요.");
+        return reader.readLine();
+    }
 }
