@@ -20,6 +20,14 @@ public class Hand {
         }
     }
 
+    public void removeCard(Card submittedCard) {
+        holdingCards.remove(submittedCard);
+    }
+
+    public void addCard(Card newCard) {
+        holdingCards.add(newCard);
+    }
+
     public List<Card> getHoldingCards() {
         return holdingCards;
     }

@@ -97,6 +97,10 @@ public class Deck {
         return hands;
     }
 
+    public Card shareCard() {
+        return cards.removeFirst();
+    }
+
     public List<Card> getCards() {
         return List.copyOf(cards);
     }
