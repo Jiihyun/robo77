@@ -1,4 +1,4 @@
-package robo77.io.input;
+package robo77.io.reader;
 
 import robo77.exception.ExceptionMessage;
 import robo77.io.Reader;

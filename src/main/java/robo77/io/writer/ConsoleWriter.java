@@ -1,4 +1,4 @@
-package robo77.io.output;
+package robo77.io.writer;
 
 import robo77.io.Writer;
 
