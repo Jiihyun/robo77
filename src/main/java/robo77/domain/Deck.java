@@ -1,6 +1,7 @@
 package robo77.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Deck {
@@ -9,6 +10,7 @@ public class Deck {
 
     public Deck() {
         this.cards = createCards();
+        shuffle();
     }
 
     private List<Card> createCards() {
@@ -79,6 +81,20 @@ public class Deck {
         for (int repeat = 0; repeat < 5; repeat++) {
             deck.add(new Card(CardType.REVERSE, 0));
         }
+    }
+
+    private void shuffle() {
+        Collections.shuffle(cards);
+    }
+
+    public List<Hand> shareCards() {
+        List<Hand> hands = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            List<Card> hand = new ArrayList<>(cards.subList(0, 5));
+            cards.subList(0, 5).clear();
+            hands.add(new Hand(hand));
+        }
+        return hands;
     }
 
     public List<Card> getCards() {
