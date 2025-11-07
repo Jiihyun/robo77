@@ -61,7 +61,7 @@ public class Deck {
 
     private void createMultipleOfElevenCard(List<Card> deck) {
         for (int number = 11; number < 77; number += 11) {
-            deck.add(new Card(CardType.SUM, 1));
+            deck.add(new Card(CardType.SUM, number));
         }
     }
 
