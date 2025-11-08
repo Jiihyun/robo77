@@ -6,6 +6,9 @@ import robo77.domain.CardType;
 import robo77.domain.Deck;
 import robo77.domain.Hand;
 import robo77.domain.player.Player;
+import robo77.domain.turn.TurnManager;
+import robo77.domain.turn.TurnPolicy;
+import robo77.domain.turn.TurnPolicyFactory;
 import robo77.exception.ExceptionMessage;
 import robo77.view.InputView;
 import robo77.view.OutputView;
@@ -26,53 +29,63 @@ public class RoboGame {
         List<Hand> hands = deck.shareCards();
         Player player = new Player(playerName, hands.getFirst());
         Player bot = new Player("bot", hands.getLast());
+
+        play(player, bot, deck);
+    }
+
+    private void play(Player player, Player bot, Deck deck) {
+        TurnManager turnManager = new TurnManager(List.of(player, bot));
         int sum = 0;
-        play(sum, player, deck, bot);
-    }
-
-    private void play(int sum, Player player, Deck deck, Player bot) {
         while (true) {
-            outputView.showSumAndHandMessage(sum, player.getHand());
-            String cardToSubmit = inputView.readCardToSubmit();
-            Card submittedCard = Card.from(cardToSubmit);
-            boolean hasCard = player.hasSubmittedCard(submittedCard);
-            if (!hasCard) {
-                throw new IllegalArgumentException(ExceptionMessage.INVALID_CARD.getMessage());
-            }
-            sum = getSum(deck, player, submittedCard, sum);
+            Player currentPlayer = turnManager.getCurrentPlayer();
+
+            Card submittedCard = getSubmittedCard(currentPlayer, sum, deck);
+            Card newCard = deck.shareCard();
+
+            sum = processCardEffect(currentPlayer, submittedCard, newCard, sum);
             if (hasEndCondition(sum)) {
-                outputView.showWinner(sum, bot.getName());
+                Player winner = getWinner(turnManager, currentPlayer);
+                outputView.showWinner(sum, winner.getName());
                 break;
             }
-            sum = getSum(deck, bot, sum);
-            if (hasEndCondition(sum)) {
-                outputView.showWinner(sum, player.getName());
-                break;
-            }
+            TurnPolicy turnPolicy = TurnPolicyFactory.get(submittedCard.getCardType());
+            turnPolicy.nextTurnPlayer(turnManager);
         }
     }
 
-    private int getSum(Deck deck, Player player, Card submittedCard, int sum) {
-        Card newCard = deck.shareCard();
+    private Card getSubmittedCard(Player currentPlayer, int sum, Deck deck) {
+        if (currentPlayer.getName().equals("bot")) {
+            Card botNewCard = deck.shareCard();
+            return currentPlayer.submitCardByBot(botNewCard);
+        }
+        outputView.showSumAndHandMessage(sum, currentPlayer.getHand());
+        String cardToSubmit = inputView.readCardToSubmit();
+        Card submittedCard = Card.from(cardToSubmit);
+
+        if (!currentPlayer.hasSubmittedCard(submittedCard)) {
+            throw new IllegalArgumentException(ExceptionMessage.INVALID_CARD.getMessage());
+        }
+        return submittedCard;
+    }
+
+    private int processCardEffect(Player player, Card submittedCard, Card newCard, int sum) {
         player.submitCard(submittedCard, newCard);
-        if (submittedCard.getCardType() == CardType.SUM) {
-            sum += submittedCard.getValue();
-        }
         outputView.showSubmittedCard(player.getName(), submittedCard);
+
+        if (submittedCard.getCardType() == CardType.SUM) {
+            return sum + submittedCard.getValue();
+        }
         return sum;
     }
 
-    private int getSum(Deck deck, Player bot, int sum) {
-        Card newCard2 = deck.shareCard();
-        Card submittedCard2 = bot.submitCardByBot(newCard2);
-        if (submittedCard2.getCardType() == CardType.SUM) {
-            sum += submittedCard2.getValue();
-        }
-        outputView.showSubmittedCard(bot.getName(), submittedCard2);
-        return sum;
+    private Player getWinner(TurnManager turnManager, Player currentPlayer) {
+        return turnManager.getPlayers().stream()
+                .filter(player -> !player.equals(currentPlayer))
+                .findFirst()
+                .orElse(currentPlayer);
     }
 
     private boolean hasEndCondition(int sum) {
-        return sum > 77 || sum % 11 == 0;
+        return sum > 77 || (sum % 11 == 0 && sum != 0);
     }
 }
