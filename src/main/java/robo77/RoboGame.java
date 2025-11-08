@@ -28,7 +28,7 @@ public class RoboGame {
         Deck deck = new Deck();
         List<Hand> hands = deck.shareCards();
         Player player = new Player(playerName, hands.getFirst());
-        Player bot = new Player("bot", hands.getLast());
+        Player bot = Player.byBot(hands.getLast());
 
         play(player, bot, deck);
     }
@@ -38,11 +38,8 @@ public class RoboGame {
         int sum = 0;
         while (true) {
             Player currentPlayer = turnManager.getCurrentPlayer();
-
             Card submittedCard = getSubmittedCard(currentPlayer, sum, deck);
-            Card newCard = deck.shareCard();
-
-            sum = processCardEffect(currentPlayer, submittedCard, newCard, sum);
+            sum = processCardEffect(currentPlayer, submittedCard, sum);
             if (hasEndCondition(sum)) {
                 Player winner = getWinner(turnManager, currentPlayer);
                 outputView.showWinner(sum, winner.getName());
@@ -54,22 +51,20 @@ public class RoboGame {
     }
 
     private Card getSubmittedCard(Player currentPlayer, int sum, Deck deck) {
-        if (currentPlayer.getName().equals("bot")) {
-            Card botNewCard = deck.shareCard();
-            return currentPlayer.submitCardByBot(botNewCard);
+        Card newCard = deck.shareCard();
+        if (currentPlayer.isBot()) {
+            return currentPlayer.submitCardByBot(newCard);
         }
         outputView.showSumAndHandMessage(sum, currentPlayer.getHand());
         String cardToSubmit = inputView.readCardToSubmit();
         Card submittedCard = Card.from(cardToSubmit);
-
         if (!currentPlayer.hasSubmittedCard(submittedCard)) {
             throw new IllegalArgumentException(ExceptionMessage.INVALID_CARD.getMessage());
         }
-        return submittedCard;
+        return currentPlayer.submitCard(submittedCard, newCard);
     }
 
-    private int processCardEffect(Player player, Card submittedCard, Card newCard, int sum) {
-        player.submitCard(submittedCard, newCard);
+    private int processCardEffect(Player player, Card submittedCard, int sum) {
         outputView.showSubmittedCard(player.getName(), submittedCard);
 
         if (submittedCard.getCardType() == CardType.SUM) {

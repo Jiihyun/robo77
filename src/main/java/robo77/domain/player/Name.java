@@ -42,6 +42,10 @@ public class Name {
         }
     }
 
+    public boolean isSame(String bot) {
+        return value.equals(bot);
+    }
+
     public String getValue() {
         return value;
     }

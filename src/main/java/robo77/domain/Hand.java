@@ -24,8 +24,8 @@ public class Hand {
         holdingCards.remove(submittedCard);
     }
 
-    public Card removeCardByBot() {
-        return holdingCards.removeFirst();
+    public Card getFirstCard() {
+        return holdingCards.getFirst();
     }
 
     public void addCard(Card newCard) {

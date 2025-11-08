@@ -5,8 +5,9 @@ import robo77.domain.Hand;
 
 public class Player {
 
-    private final Name name;
+    private static final String BOT = "bot";
 
+    private final Name name;
     private final Hand hand;
 
     public Player(String name, Hand hand) {
@@ -14,8 +15,8 @@ public class Player {
         this.hand = hand;
     }
 
-    public Hand getHand() {
-        return hand;
+    public static Player byBot(Hand hand) {
+        return new Player(BOT, hand);
     }
 
     public boolean hasSubmittedCard(Card submittedCard) {
@@ -23,19 +24,28 @@ public class Player {
                 .anyMatch(card -> card.equals(submittedCard));
     }
 
-    //TODO: x2 대비 해야함
-    public void submitCard(Card submittedCard, Card newCard) {
+    public Card submitCard(Card submittedCard, Card newCard) {
         hand.removeCard(submittedCard);
         hand.addCard(newCard);
+        return submittedCard;
     }
 
     public Card submitCardByBot(Card newCard) {
-        Card card = hand.removeCardByBot();
+        Card submittedCard = hand.getFirstCard();
+        hand.removeCard(submittedCard);
         hand.addCard(newCard);
-        return card;
+        return submittedCard;
+    }
+
+    public boolean isBot() {
+        return name.isSame(BOT);
     }
 
     public String getName() {
         return name.getValue();
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 }
