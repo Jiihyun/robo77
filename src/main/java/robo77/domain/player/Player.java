@@ -28,4 +28,14 @@ public class Player {
         hand.removeCard(submittedCard);
         hand.addCard(newCard);
     }
+
+    public Card submitCardByBot(Card newCard) {
+        Card card = hand.removeCardByBot();
+        hand.addCard(newCard);
+        return card;
+    }
+
+    public String getName() {
+        return name.getValue();
+    }
 }
