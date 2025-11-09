@@ -25,8 +25,8 @@ public class GameScore {
         sum += value;
     }
 
-    public boolean isGameOver() {
-        return endCondition.isGameOver(sum);
+    public boolean isOverLimit() {
+        return endCondition.isSatisfiedBy(sum);
     }
 
     public int getValue() {

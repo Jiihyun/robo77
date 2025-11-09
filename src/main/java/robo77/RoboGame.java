@@ -2,7 +2,7 @@ package robo77;
 
 import robo77.domain.Card;
 import robo77.domain.Deck;
-import robo77.domain.GameScore;
+import robo77.domain.Referee;
 import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
 import robo77.domain.turn.TurnPolicy;
@@ -28,20 +28,18 @@ public class RoboGame {
     }
 
     private void playGame(TurnManager turnManager, Deck deck) {
-        GameScore gameScore = GameScore.createWithEndCondition();
-        while (true) {
-            Player currentPlayer = turnManager.getCurrentPlayer();
-            Card submittedCard = getSubmittedCard(currentPlayer, gameScore.getValue(), deck);
+        Referee referee = new Referee();
+        Player currentPlayer = turnManager.getCurrentPlayer();
+        while (!referee.shouldEndGame()) {
+            Card submittedCard = getSubmittedCard(currentPlayer, referee.noticeScore(), deck);
             outputView.showSubmittedCard(currentPlayer.getName(), submittedCard);
-            gameScore.add(submittedCard.getValue());
-            if (gameScore.isGameOver()) {
-                Player winner = getWinner(turnManager, currentPlayer);
-                outputView.showWinner(gameScore.getValue(), winner.getName());
-                break;
-            }
+            referee.recordScore(submittedCard.getValue());
+
             TurnPolicy turnPolicy = TurnPolicyFactory.get(submittedCard.getCardType());
-            turnPolicy.nextTurnPlayer(turnManager);
+            currentPlayer = turnPolicy.nextTurnPlayer(turnManager);
         }
+        Player winner = referee.determineWinner(turnManager);
+        outputView.showWinner(referee.noticeScore(), winner.getName());
     }
 
     private Card getSubmittedCard(Player currentPlayer, int score, Deck deck) {
@@ -53,12 +51,5 @@ public class RoboGame {
         String cardToSubmit = inputView.readCardToSubmit();
         Card submittedCard = Card.from(cardToSubmit);
         return currentPlayer.submitCard(submittedCard, newCard);
-    }
-
-    private Player getWinner(TurnManager turnManager, Player currentPlayer) {
-        return turnManager.getPlayers().stream()
-                .filter(player -> !player.equals(currentPlayer))
-                .findFirst()
-                .orElse(currentPlayer);
     }
 }

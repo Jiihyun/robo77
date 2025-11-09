@@ -34,7 +34,7 @@ public class Player {
     }
 
     private boolean cannotSubmit(Card submittedCard) {
-        return hand.hasCard(submittedCard);
+        return !hand.hasCard(submittedCard);
     }
 
     public Card submitCardByBot(Card newCard) {

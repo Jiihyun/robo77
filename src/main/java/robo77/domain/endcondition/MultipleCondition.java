@@ -7,7 +7,7 @@ public class MultipleCondition implements EndCondition {
     private static final int MULTIPLE = 11;
 
     @Override
-    public boolean isGameOver(int sum) {
+    public boolean isSatisfiedBy(int sum) {
         return sum % MULTIPLE == 0
                 && sum != 0;
     }

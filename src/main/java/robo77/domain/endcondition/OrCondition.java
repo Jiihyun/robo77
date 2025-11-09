@@ -12,8 +12,8 @@ public class OrCondition implements EndCondition {
     }
 
     @Override
-    public boolean isGameOver(int sum) {
+    public boolean isSatisfiedBy(int sum) {
         return conditions.stream()
-                .anyMatch(endCondition -> endCondition.isGameOver(sum));
+                .anyMatch(endCondition -> endCondition.isSatisfiedBy(sum));
     }
 }

@@ -7,7 +7,7 @@ public class OverLimitCondition implements EndCondition {
     private static final int LIMIT = 77;
 
     @Override
-    public boolean isGameOver(int sum) {
+    public boolean isSatisfiedBy(int sum) {
         return sum > LIMIT;
     }
 }
