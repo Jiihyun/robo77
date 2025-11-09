@@ -1,10 +1,8 @@
 package robo77;
 
-import java.util.List;
 import robo77.domain.Card;
 import robo77.domain.CardType;
 import robo77.domain.Deck;
-import robo77.domain.Hand;
 import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
 import robo77.domain.turn.TurnPolicy;
@@ -24,13 +22,12 @@ public class RoboGame {
 
     public void run() {
         Deck deck = new Deck();
-        List<Hand> hands = deck.shareCards();
-
         String playerName = inputView.readPlayerName();
-        Player player = new Player(playerName, hands.getFirst());
-        Player bot = Player.byBot(hands.getLast());
+        TurnManager turnManager = TurnManager.createTurn(playerName, deck);
+        playGame(turnManager, deck);
+    }
 
-        TurnManager turnManager = new TurnManager(List.of(player, bot));
+    private void playGame(TurnManager turnManager, Deck deck) {
         int sum = 0;
         while (true) {
             Player currentPlayer = turnManager.getCurrentPlayer();

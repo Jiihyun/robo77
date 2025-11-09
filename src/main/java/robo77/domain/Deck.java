@@ -3,6 +3,7 @@ package robo77.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import robo77.exception.ExceptionMessage;
 
 public class Deck {
 
@@ -87,18 +88,18 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
-    public List<Hand> shareCards() {
-        List<Hand> hands = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            List<Card> hand = new ArrayList<>(cards.subList(0, 5));
-            cards.subList(0, 5).clear();
-            hands.add(new Hand(hand));
-        }
-        return hands;
+    public Hand shareCards() {
+        List<Card> hand = new ArrayList<>(cards.subList(0, 5));
+        cards.subList(0, 5).clear();
+        return new Hand(hand);
     }
 
     public Card shareCard() {
-        return cards.removeFirst();
+        Card card = cards.removeFirst();
+        if (card == null) {
+            throw new IllegalStateException(ExceptionMessage.CARD_NOT_EXISTS.getMessage());
+        }
+        return card;
     }
 
     public List<Card> getCards() {

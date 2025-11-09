@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import robo77.domain.Deck;
 import robo77.domain.player.Player;
 
 public class TurnManager {
@@ -13,6 +14,12 @@ public class TurnManager {
 
     public TurnManager(List<Player> players) {
         this.players = new ArrayDeque<>(players);
+    }
+
+    public static TurnManager createTurn(String playerName, Deck deck) {
+        Player player = new Player(playerName, deck.shareCards());
+        Player bot = Player.byBot(deck.shareCards());
+        return new TurnManager(List.of(player, bot));
     }
 
     public void reverseOrder() {
