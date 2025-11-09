@@ -2,6 +2,7 @@ package robo77.domain.player;
 
 import robo77.domain.Card;
 import robo77.domain.Hand;
+import robo77.exception.ExceptionMessage;
 
 public class Player {
 
@@ -19,15 +20,21 @@ public class Player {
         return new Player(BOT, hand);
     }
 
-    public boolean hasSubmittedCard(Card submittedCard) {
-        return hand.getHoldingCards().stream()
-                .anyMatch(card -> card.equals(submittedCard));
-    }
-
     public Card submitCard(Card submittedCard, Card newCard) {
+        validateSubmittableCard(submittedCard);
         hand.removeCard(submittedCard);
         hand.addCard(newCard);
         return submittedCard;
+    }
+
+    private void validateSubmittableCard(Card submittedCard) {
+        if (cannotSubmit(submittedCard)) {
+            throw new IllegalArgumentException(ExceptionMessage.INVALID_CARD.getMessage());
+        }
+    }
+
+    private boolean cannotSubmit(Card submittedCard) {
+        return hand.hasCard(submittedCard);
     }
 
     public Card submitCardByBot(Card newCard) {

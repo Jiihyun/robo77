@@ -20,6 +20,11 @@ public class Hand {
         }
     }
 
+    public boolean hasCard(Card submittedCard) {
+        return holdingCards.stream()
+                .noneMatch(card -> card.equals(submittedCard));
+    }
+
     public void removeCard(Card submittedCard) {
         holdingCards.remove(submittedCard);
     }

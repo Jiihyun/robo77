@@ -9,7 +9,6 @@ import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
 import robo77.domain.turn.TurnPolicy;
 import robo77.domain.turn.TurnPolicyFactory;
-import robo77.exception.ExceptionMessage;
 import robo77.view.InputView;
 import robo77.view.OutputView;
 
@@ -24,16 +23,13 @@ public class RoboGame {
     }
 
     public void run() {
-        String playerName = inputView.readPlayerName();
         Deck deck = new Deck();
         List<Hand> hands = deck.shareCards();
+
+        String playerName = inputView.readPlayerName();
         Player player = new Player(playerName, hands.getFirst());
         Player bot = Player.byBot(hands.getLast());
 
-        play(player, bot, deck);
-    }
-
-    private void play(Player player, Player bot, Deck deck) {
         TurnManager turnManager = new TurnManager(List.of(player, bot));
         int sum = 0;
         while (true) {
@@ -58,9 +54,6 @@ public class RoboGame {
         outputView.showSumAndHandMessage(sum, currentPlayer.getHand());
         String cardToSubmit = inputView.readCardToSubmit();
         Card submittedCard = Card.from(cardToSubmit);
-        if (!currentPlayer.hasSubmittedCard(submittedCard)) {
-            throw new IllegalArgumentException(ExceptionMessage.INVALID_CARD.getMessage());
-        }
         return currentPlayer.submitCard(submittedCard, newCard);
     }
 
