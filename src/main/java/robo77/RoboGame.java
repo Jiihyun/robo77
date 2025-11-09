@@ -1,8 +1,8 @@
 package robo77;
 
 import robo77.domain.Card;
-import robo77.domain.CardType;
 import robo77.domain.Deck;
+import robo77.domain.GameScore;
 import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
 import robo77.domain.turn.TurnPolicy;
@@ -28,14 +28,15 @@ public class RoboGame {
     }
 
     private void playGame(TurnManager turnManager, Deck deck) {
-        int sum = 0;
+        GameScore gameScore = GameScore.createWithEndCondition();
         while (true) {
             Player currentPlayer = turnManager.getCurrentPlayer();
-            Card submittedCard = getSubmittedCard(currentPlayer, sum, deck);
-            sum = processCardEffect(currentPlayer, submittedCard, sum);
-            if (hasEndCondition(sum)) {
+            Card submittedCard = getSubmittedCard(currentPlayer, gameScore.getValue(), deck);
+            outputView.showSubmittedCard(currentPlayer.getName(), submittedCard);
+            gameScore.add(submittedCard.getValue());
+            if (gameScore.isGameOver()) {
                 Player winner = getWinner(turnManager, currentPlayer);
-                outputView.showWinner(sum, winner.getName());
+                outputView.showWinner(gameScore.getValue(), winner.getName());
                 break;
             }
             TurnPolicy turnPolicy = TurnPolicyFactory.get(submittedCard.getCardType());
@@ -43,24 +44,15 @@ public class RoboGame {
         }
     }
 
-    private Card getSubmittedCard(Player currentPlayer, int sum, Deck deck) {
+    private Card getSubmittedCard(Player currentPlayer, int score, Deck deck) {
         Card newCard = deck.shareCard();
         if (currentPlayer.isBot()) {
             return currentPlayer.submitCardByBot(newCard);
         }
-        outputView.showSumAndHandMessage(sum, currentPlayer.getHand());
+        outputView.showSumAndHandMessage(score, currentPlayer.getHand());
         String cardToSubmit = inputView.readCardToSubmit();
         Card submittedCard = Card.from(cardToSubmit);
         return currentPlayer.submitCard(submittedCard, newCard);
-    }
-
-    private int processCardEffect(Player player, Card submittedCard, int sum) {
-        outputView.showSubmittedCard(player.getName(), submittedCard);
-
-        if (submittedCard.getCardType() == CardType.SUM) {
-            return sum + submittedCard.getValue();
-        }
-        return sum;
     }
 
     private Player getWinner(TurnManager turnManager, Player currentPlayer) {
@@ -68,9 +60,5 @@ public class RoboGame {
                 .filter(player -> !player.equals(currentPlayer))
                 .findFirst()
                 .orElse(currentPlayer);
-    }
-
-    private boolean hasEndCondition(int sum) {
-        return sum > 77 || (sum % 11 == 0 && sum != 0);
     }
 }

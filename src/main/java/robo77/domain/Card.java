@@ -17,7 +17,7 @@ public class Card {
             int value = Integer.parseInt(cardToSubmit);
             return new Card(CardType.SUM, value);
         } catch (NumberFormatException numberFormatException) {
-            return new Card(CardType.from(cardToSubmit), -1);
+            return new Card(CardType.from(cardToSubmit), 0);
         }
     }
 
