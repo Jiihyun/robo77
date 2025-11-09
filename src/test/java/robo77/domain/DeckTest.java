@@ -3,7 +3,6 @@ package robo77.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class DeckTest {
@@ -30,13 +29,13 @@ class DeckTest {
     }
 
     @Test
-    void 플레이어들에게_카드를_나눠준다() {
+    void 플레이어에게_카드를_나눠준다() {
         // given
         Deck deck = new Deck();
         int sizeBeforeShare = deck.getCards().size();
-        int sizeAfterShare = sizeBeforeShare - 10;
+        int sizeAfterShare = sizeBeforeShare - 5;
         // when
-        List<Hand> hands = deck.shareCards();
+        Hand hand = deck.shareCards();
         // then
         assertThat(deck.getCards()).hasSize(sizeAfterShare);
     }
