@@ -1,5 +1,6 @@
 package robo77.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import robo77.domain.card.Card;
 import robo77.exception.ExceptionMessage;
@@ -12,7 +13,7 @@ public class Hand {
 
     public Hand(List<Card> holdingCards) {
         validateCardSize(holdingCards);
-        this.holdingCards = holdingCards;
+        this.holdingCards = new ArrayList<>(holdingCards);
     }
 
     private void validateCardSize(List<Card> holdingCards) {
