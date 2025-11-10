@@ -38,20 +38,21 @@ public class RoboGameController {
 
     private void playTurn(RoboGame roboGame) {
         Player currentPlayer = roboGame.getCurrentPlayer();
-        Card newCard = roboGame.drawCard();
-        Card submittedCard = getSubmittedCard(currentPlayer, newCard, roboGame.getCurrentScore());
+        Card submittedCard = getSubmittedCard(currentPlayer, roboGame.getCurrentScore());
         outputView.showSubmittedCard(currentPlayer.getName(), submittedCard);
+        Card newCard = roboGame.drawCard();
+        currentPlayer.pickCard(newCard);
         roboGame.processCard(submittedCard);
     }
 
-    private Card getSubmittedCard(Player currentPlayer, Card newCard, int score) {
+    private Card getSubmittedCard(Player currentPlayer, int score) {
         if (currentPlayer.isBot()) {
-            return currentPlayer.submitCardByBot(newCard);
+            return currentPlayer.submitCardByBot();
         }
         return retryOnInvalidInput(() -> {
             outputView.showSumAndHandMessage(score, currentPlayer.getHand());
             String submittedCard = inputView.readCardToSubmit();
-            return currentPlayer.submitCard(Card.from(submittedCard), newCard);
+            return currentPlayer.submitCard(Card.from(submittedCard));
         });
     }
 

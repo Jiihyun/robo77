@@ -20,10 +20,9 @@ public class Player {
         return new Player(BOT, hand);
     }
 
-    public Card submitCard(Card submittedCard, Card newCard) {
+    public Card submitCard(Card submittedCard) {
         validateSubmittableCard(submittedCard);
         hand.removeCard(submittedCard);
-        hand.addCard(newCard);
         return submittedCard;
     }
 
@@ -37,11 +36,14 @@ public class Player {
         return !hand.hasCard(submittedCard);
     }
 
-    public Card submitCardByBot(Card newCard) {
+    public Card submitCardByBot() {
         Card submittedCard = hand.getFirstCard();
         hand.removeCard(submittedCard);
-        hand.addCard(newCard);
         return submittedCard;
+    }
+
+    public void pickCard(Card newCard) {
+        hand.addCard(newCard);
     }
 
     public boolean isBot() {
