@@ -32,8 +32,8 @@ public class RoboGame {
         return referee.noticeScore();
     }
 
-    public boolean isGameOver() {
-        return referee.shouldEndGame();
+    public boolean isPlaying() {
+        return !referee.shouldEndGame();
     }
 
     public Card drawCard() {

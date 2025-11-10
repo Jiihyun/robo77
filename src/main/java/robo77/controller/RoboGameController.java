@@ -30,7 +30,7 @@ public class RoboGameController {
     }
 
     private void playGame(RoboGame roboGame) {
-        while (!roboGame.isGameOver()) {
+        while (roboGame.isPlaying()) {
             playTurn(roboGame);
         }
         showResult(roboGame);
