@@ -1,6 +1,7 @@
 package robo77.domain;
 
 import java.util.List;
+import robo77.domain.card.Card;
 import robo77.exception.ExceptionMessage;
 
 public class Hand {

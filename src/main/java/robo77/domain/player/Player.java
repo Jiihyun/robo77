@@ -1,7 +1,7 @@
 package robo77.domain.player;
 
-import robo77.domain.Card;
 import robo77.domain.Hand;
+import robo77.domain.card.Card;
 import robo77.exception.ExceptionMessage;
 
 public class Player {

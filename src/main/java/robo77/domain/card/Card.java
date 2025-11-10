@@ -1,4 +1,4 @@
-package robo77.domain;
+package robo77.domain.card;
 
 import java.util.Objects;
 

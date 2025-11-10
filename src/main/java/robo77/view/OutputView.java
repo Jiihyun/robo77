@@ -1,9 +1,9 @@
 package robo77.view;
 
 import java.util.List;
-import robo77.domain.Card;
-import robo77.domain.CardType;
 import robo77.domain.Hand;
+import robo77.domain.card.Card;
+import robo77.domain.card.CardType;
 import robo77.io.Writer;
 
 public class OutputView {

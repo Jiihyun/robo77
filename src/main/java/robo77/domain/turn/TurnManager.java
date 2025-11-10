@@ -1,8 +1,8 @@
 package robo77.domain.turn;
 
 import java.util.List;
-import robo77.domain.Card;
-import robo77.domain.Deck;
+import robo77.domain.card.Card;
+import robo77.domain.card.Deck;
 import robo77.domain.player.Player;
 import robo77.domain.player.Players;
 

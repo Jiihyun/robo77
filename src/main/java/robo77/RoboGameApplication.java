@@ -1,5 +1,6 @@
 package robo77;
 
+import robo77.controller.RoboGameController;
 import robo77.io.Reader;
 import robo77.io.Writer;
 import robo77.io.reader.ConsoleReader;
@@ -15,6 +16,5 @@ public class RoboGameApplication {
         OutputView outputView = new OutputView(writer);
         RoboGameController roboGameController = new RoboGameController(inputView, outputView);
         roboGameController.run();
-
     }
 }

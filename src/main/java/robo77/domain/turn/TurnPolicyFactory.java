@@ -2,7 +2,7 @@ package robo77.domain.turn;
 
 import java.util.HashMap;
 import java.util.Map;
-import robo77.domain.CardType;
+import robo77.domain.card.CardType;
 import robo77.domain.turn.turnpolicy.DoubleTurnPolicy;
 import robo77.domain.turn.turnpolicy.NormalTurnPolicy;
 import robo77.domain.turn.turnpolicy.ReverseTurnPolicy;

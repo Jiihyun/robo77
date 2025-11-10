@@ -1,8 +1,8 @@
-package robo77;
+package robo77.controller;
 
 import java.util.function.Supplier;
-import robo77.domain.Card;
 import robo77.domain.RoboGame;
+import robo77.domain.card.Card;
 import robo77.domain.player.Player;
 import robo77.view.InputView;
 import robo77.view.OutputView;

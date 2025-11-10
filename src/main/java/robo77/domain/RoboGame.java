@@ -1,5 +1,7 @@
 package robo77.domain;
 
+import robo77.domain.card.Card;
+import robo77.domain.card.Deck;
 import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
 

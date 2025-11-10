@@ -1,8 +1,9 @@
-package robo77.domain;
+package robo77.domain.card;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import robo77.domain.Hand;
 import robo77.exception.ExceptionMessage;
 
 public class Deck {
