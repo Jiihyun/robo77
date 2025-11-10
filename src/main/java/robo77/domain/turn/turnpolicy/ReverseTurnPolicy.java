@@ -1,7 +1,7 @@
 package robo77.domain.turn.turnpolicy;
 
 import robo77.domain.player.Player;
-import robo77.domain.turn.TurnManager;
+import robo77.domain.player.Players;
 import robo77.domain.turn.TurnPolicy;
 
 public class ReverseTurnPolicy implements TurnPolicy {
@@ -9,11 +9,11 @@ public class ReverseTurnPolicy implements TurnPolicy {
     private static final int SPECIAL_NUMBER_OF_PLAYERS = 2;
 
     @Override
-    public Player nextTurnPlayer(TurnManager turnManager) {
-        if (turnManager.getNumberOfPlayers() == SPECIAL_NUMBER_OF_PLAYERS) {
-            return turnManager.getCurrentPlayer();
+    public Player findNextTurnPlayer(Players players) {
+        if (players.getNumberOfPlayers() == SPECIAL_NUMBER_OF_PLAYERS) {
+            return players.peekFirst();
         }
-        turnManager.reverseOrder();
-        return turnManager.getCurrentPlayer();
+        players.reverseOrder();
+        return players.peekFirst();
     }
 }

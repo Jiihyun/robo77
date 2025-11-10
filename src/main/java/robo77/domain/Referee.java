@@ -20,8 +20,7 @@ public class Referee {
     }
 
     public Player determineWinner(TurnManager turnManager) {
-        return turnManager.getPlayers()
-                .getFirst();
+        return turnManager.getCurrentPlayer();
     }
 
     public int noticeScore() {

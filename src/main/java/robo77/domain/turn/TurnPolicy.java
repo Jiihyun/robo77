@@ -1,8 +1,9 @@
 package robo77.domain.turn;
 
 import robo77.domain.player.Player;
+import robo77.domain.player.Players;
 
 public interface TurnPolicy {
 
-    Player nextTurnPlayer(TurnManager turnManager);
+    Player findNextTurnPlayer(Players players);
 }

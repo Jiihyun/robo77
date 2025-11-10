@@ -1,15 +1,15 @@
 package robo77.domain.turn.turnpolicy;
 
 import robo77.domain.player.Player;
-import robo77.domain.turn.TurnManager;
+import robo77.domain.player.Players;
 import robo77.domain.turn.TurnPolicy;
 
 public class NormalTurnPolicy implements TurnPolicy {
 
     @Override
-    public Player nextTurnPlayer(TurnManager turnManager) {
-        Player current = turnManager.pollCurrentPlayer();
-        turnManager.pushToEnd(current);
-        return turnManager.getCurrentPlayer();
+    public Player findNextTurnPlayer(Players players) {
+        Player current = players.pollFirst();
+        players.pushToEnd(current);
+        return players.peekFirst();
     }
 }
