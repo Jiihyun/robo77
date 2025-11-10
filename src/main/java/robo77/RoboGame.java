@@ -35,8 +35,7 @@ public class RoboGame {
             referee.recordScore(submittedCard.getValue());
             currentPlayer = turnManager.findNextTurnPlayer(submittedCard);
         }
-        Player winner = referee.determineWinner(turnManager);
-        outputView.showWinner(referee.noticeScore(), winner.getName());
+        determineWinner(turnManager, referee);
     }
 
     private Card getSubmittedCard(Player currentPlayer, Card newCard, int score) {
@@ -51,5 +50,10 @@ public class RoboGame {
         outputView.showSumAndHandMessage(score, currentPlayer.getHand());
         String cardToSubmit = inputView.readCardToSubmit();
         return Card.from(cardToSubmit);
+    }
+
+    private void determineWinner(TurnManager turnManager, Referee referee) {
+        Player winner = referee.determineWinner(turnManager);
+        outputView.showWinner(referee.noticeScore(), winner.getName());
     }
 }
