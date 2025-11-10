@@ -94,7 +94,7 @@ public class Deck {
         return new Hand(hand);
     }
 
-    public Card shareCard() {
+    public Card drawCard() {
         Card card = cards.removeFirst();
         if (card == null) {
             throw new IllegalStateException(ExceptionMessage.CARD_NOT_EXISTS.getMessage());
