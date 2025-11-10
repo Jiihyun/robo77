@@ -1,17 +1,20 @@
 package robo77.domain.card;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 import robo77.domain.Hand;
 import robo77.exception.ExceptionMessage;
 
 public class Deck {
 
+    public static final int DEFAULT_HAND_SIZE = 5;
+
     private final List<Card> cards;
 
-    public Deck() {
-        this.cards = CardGenerator.createCards();
+    public Deck(List<Card> cards) {
+        this.cards = cards;
         shuffle();
     }
 
@@ -20,17 +23,18 @@ public class Deck {
     }
 
     public Hand drawCards() {
-        List<Card> hand = new ArrayList<>(cards.subList(0, 5));
-        cards.subList(0, 5).clear();
+        List<Card> hand = IntStream.range(0, DEFAULT_HAND_SIZE)
+                .mapToObj(repeatCount -> drawCard())
+                .toList();
         return new Hand(hand);
     }
 
     public Card drawCard() {
-        Card card = cards.removeFirst();
-        if (card == null) {
+        try {
+            return cards.removeFirst();
+        } catch (NoSuchElementException noSuchElementException) {
             throw new IllegalStateException(ExceptionMessage.CARD_NOT_EXISTS.getMessage());
         }
-        return card;
     }
 
     public List<Card> getCards() {

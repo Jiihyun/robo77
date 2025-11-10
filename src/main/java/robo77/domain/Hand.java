@@ -39,6 +39,6 @@ public class Hand {
     }
 
     public List<Card> getHoldingCards() {
-        return holdingCards;
+        return List.copyOf(holdingCards);
     }
 }

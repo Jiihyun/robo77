@@ -1,6 +1,7 @@
 package robo77.domain;
 
 import robo77.domain.card.Card;
+import robo77.domain.card.CardGenerator;
 import robo77.domain.card.Deck;
 import robo77.domain.player.Player;
 import robo77.domain.turn.TurnManager;
@@ -18,7 +19,7 @@ public class RoboGame {
     }
 
     public static RoboGame start(String playerName) {
-        Deck deck = new Deck();
+        Deck deck = new Deck(CardGenerator.createCards());
         TurnManager turnManager = TurnManager.createTurn(playerName, deck);
         Referee referee = new Referee();
         return new RoboGame(deck, turnManager, referee);

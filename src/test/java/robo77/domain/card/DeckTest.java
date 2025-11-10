@@ -1,43 +1,72 @@
 package robo77.domain.card;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static robo77.domain.card.Deck.DEFAULT_HAND_SIZE;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import robo77.domain.Hand;
+import robo77.exception.ExceptionMessage;
 
 class DeckTest {
 
     @Test
     void 덱을_초기화한다() {
         // given
-        int expectedSize = 56;
+        int expectedSize = 1;
+        List<Card> cards = List.of(new Card(CardType.SUM, 1));
         // when
-        Deck deck = new Deck();
+        Deck deck = new Deck(cards);
         // then
-        assertAll(
-                () -> assertThat(deck.getCards()).hasSize(expectedSize),
-                () -> assertThat(getCount(deck, CardType.REVERSE)).isEqualTo(5),
-                () -> assertThat(getCount(deck, CardType.DOUBLE)).isEqualTo(4),
-                () -> assertThat(getCount(deck, CardType.SUM)).isEqualTo(47)
-        );
-    }
-
-    private long getCount(Deck deck, CardType cardType) {
-        return deck.getCards().stream()
-                .filter(card -> card.getCardType() == cardType)
-                .count();
+        assertThat(deck.getCards()).hasSize(expectedSize);
     }
 
     @Test
-    void 플레이어에게_카드를_나눠준다() {
+    void 핸드_크기만큼_카드를_나눠준다() {
         // given
-        Deck deck = new Deck();
-        int sizeBeforeShare = deck.getCards().size();
-        int sizeAfterShare = sizeBeforeShare - 5;
+        Deck deck = createDeck();
+        int deckSizeBeforeDraw = deck.getCards().size();
+        int expectedDeckSizeAfterDraw = deckSizeBeforeDraw - DEFAULT_HAND_SIZE;
         // when
         Hand hand = deck.drawCards();
         // then
-        assertThat(deck.getCards()).hasSize(sizeAfterShare);
+        assertAll(
+                () -> assertThat(hand.getHoldingCards()).hasSize(DEFAULT_HAND_SIZE),
+                () -> assertThat(deck.getCards()).hasSize(expectedDeckSizeAfterDraw)
+        );
+    }
+
+    @Test
+    void 카드_한_장을_나눠준다() {
+        // given
+        Deck deck = createDeck();
+        Card expectedCard = deck.getCards().getFirst();
+        // when
+        Card card = deck.drawCard();
+        // then
+        assertThat(card).isEqualTo(expectedCard);
+    }
+
+    @Test
+    void 나눠줄_카드가_없으면_예외를_반환한다() {
+        // given
+        Deck deck = new Deck(List.of());
+        // when & then
+        assertThatThrownBy(deck::drawCard)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(ExceptionMessage.CARD_NOT_EXISTS.getMessage());
+    }
+
+    private Deck createDeck() {
+        return new Deck(new ArrayList<>(List.of(
+                new Card(CardType.SUM, 0),
+                new Card(CardType.SUM, 2),
+                new Card(CardType.SUM, 3),
+                new Card(CardType.SUM, 4),
+                new Card(CardType.SUM, 5)
+        )));
     }
 }
