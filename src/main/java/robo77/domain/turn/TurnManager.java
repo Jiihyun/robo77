@@ -15,8 +15,8 @@ public class TurnManager {
     }
 
     public static TurnManager createTurn(String playerName, Deck deck) {
-        Player player = new Player(playerName, deck.shareCards());
-        Player bot = Player.byBot(deck.shareCards());
+        Player player = new Player(playerName, deck.drawCards());
+        Player bot = Player.byBot(deck.drawCards());
         return new TurnManager(new Players(List.of(player, bot)));
     }
 

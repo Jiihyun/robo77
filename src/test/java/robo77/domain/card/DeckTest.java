@@ -36,7 +36,7 @@ class DeckTest {
         int sizeBeforeShare = deck.getCards().size();
         int sizeAfterShare = sizeBeforeShare - 5;
         // when
-        Hand hand = deck.shareCards();
+        Hand hand = deck.drawCards();
         // then
         assertThat(deck.getCards()).hasSize(sizeAfterShare);
     }
