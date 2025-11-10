@@ -17,13 +17,13 @@ class PlayerTest {
     @Test
     void 카드를_제출할_수_있다() {
         // given
-        Card card = new Card(CardType.SUM, 2);
+        Card expectedCard = new Card(CardType.SUM, 2);
         Player player = new Player("jihyun", createHand());
         // when
-        Card submittedCard = player.submitCard(card);
+        Card submittedCard = player.submitCard(expectedCard);
         // then
         assertAll(
-                () -> assertThat(submittedCard).isEqualTo(card),
+                () -> assertThat(submittedCard).isEqualTo(expectedCard),
                 () -> assertThat(player.getHand().hasCard(submittedCard)).isFalse()
         );
     }
@@ -47,6 +47,7 @@ class PlayerTest {
         Card expectedCard = hand.getFirstCard();
         // when
         Card submittedCard = bot.submitCardByBot();
+        // then
         assertAll(
                 () -> assertThat(submittedCard).isEqualTo(expectedCard),
                 () -> assertThat(bot.getHand().hasCard(expectedCard)).isFalse()
@@ -54,7 +55,7 @@ class PlayerTest {
     }
 
     @Test
-    void 새_카드를_핸드에_추가할_수_있다() {
+    void 새_카드를_뽑을_수_있다() {
         // given
         Player player = new Player("jihyun", createHand());
         Card newCard = new Card(CardType.DOUBLE, 0);
