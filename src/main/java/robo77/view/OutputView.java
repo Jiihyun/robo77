@@ -9,6 +9,7 @@ import robo77.io.Writer;
 public class OutputView {
 
     private static final String NEW_LINE = System.lineSeparator();
+    private static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
 
     private final Writer writer;
 
@@ -38,5 +39,9 @@ public class OutputView {
     public void showWinner(int sum, String winner) {
         writer.writeLine(NEW_LINE + "게임 종료");
         writer.writeLine("합계가 " + sum + "이므로 " + winner + "의 승리입니다.");
+    }
+
+    public void showError(String message) {
+        writer.writeLine(ERROR_MESSAGE_PREFIX + message);
     }
 }

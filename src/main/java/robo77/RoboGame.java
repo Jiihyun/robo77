@@ -1,5 +1,6 @@
 package robo77;
 
+import java.util.function.Supplier;
 import robo77.domain.Card;
 import robo77.domain.Deck;
 import robo77.domain.Referee;
@@ -30,12 +31,18 @@ public class RoboGame {
         Player currentPlayer = turnManager.getCurrentPlayer();
         while (!referee.shouldEndGame()) {
             Card newCard = deck.shareCard();
-            Card submittedCard = getSubmittedCard(currentPlayer, newCard, referee.noticeScore());
+            Card submittedCard = processTurn(currentPlayer, newCard, referee);
             outputView.showSubmittedCard(currentPlayer.getName(), submittedCard);
             referee.recordScore(submittedCard.getValue());
             currentPlayer = turnManager.findNextTurnPlayer(submittedCard);
         }
         determineWinner(turnManager, referee);
+    }
+
+    private Card processTurn(Player player, Card newCard, Referee referee) {
+        return retryOnInvalidInput(
+                () -> getSubmittedCard(player, newCard, referee.noticeScore())
+        );
     }
 
     private Card getSubmittedCard(Player currentPlayer, Card newCard, int score) {
@@ -55,5 +62,15 @@ public class RoboGame {
     private void determineWinner(TurnManager turnManager, Referee referee) {
         Player winner = referee.determineWinner(turnManager);
         outputView.showWinner(referee.noticeScore(), winner.getName());
+    }
+
+    public <T> T retryOnInvalidInput(Supplier<T> input) {
+        while (true) {
+            try {
+                return input.get();
+            } catch (IllegalArgumentException e) {
+                outputView.showError(e.getMessage());
+            }
+        }
     }
 }
