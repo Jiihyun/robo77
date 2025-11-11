@@ -17,8 +17,7 @@ public class OutputView {
         this.writer = writer;
     }
 
-    public void showSumAndHandMessage(int sum, Hand hand) {
-//        writer.writeLine(NEW_LINE + "현재 합계: " + sum);
+    public void showSumAndHandMessage(Hand hand) {
         List<String> cards = hand.getHoldingCards().stream()
                 .map(this::cardToDisplayString)
                 .toList();
