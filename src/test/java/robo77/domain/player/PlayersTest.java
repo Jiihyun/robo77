@@ -22,7 +22,7 @@ class PlayersTest {
         players.reverseOrder();
         // then
         assertAll(
-                () -> assertThat(players.getCurrentPlayer()).isEqualTo(player2),
+                () -> assertThat(players.peekFirst()).isEqualTo(player2),
                 () -> assertThat(List.of(players.pollFirst(), players.pollFirst()))
                         .containsExactly(player2, player1)
         );

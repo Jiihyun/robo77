@@ -10,10 +10,19 @@ public class ReverseTurnPolicy implements TurnPolicy {
 
     @Override
     public Player findNextTurnPlayer(Players players) {
-        if (players.getNumberOfPlayers() == SPECIAL_NUMBER_OF_PLAYERS) {
+        removeDuplicatedHeadAndTail(players);
+        if (players.getUniquePlayerCount() == SPECIAL_NUMBER_OF_PLAYERS) {
             return players.peekFirst();
         }
         players.reverseOrder();
         return players.peekFirst();
+    }
+
+    private void removeDuplicatedHeadAndTail(Players players) {
+        Player first = players.peekFirst();
+        Player last = players.peekLast();
+        if (first != null && first.equals(last)) {
+            players.pollLast();
+        }
     }
 }

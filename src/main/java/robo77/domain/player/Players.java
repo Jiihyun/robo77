@@ -37,11 +37,17 @@ public class Players {
         return players.peekFirst();
     }
 
-    public int getNumberOfPlayers() {
-        return players.size();
+    public Player peekLast() {
+        return players.peekLast();
     }
 
-    public Player getCurrentPlayer() {
-        return players.peekFirst();
+    public Player pollLast() {
+        return players.pollLast();
+    }
+
+    public long getUniquePlayerCount() {
+        return players.stream()
+                .distinct()
+                .count();
     }
 }

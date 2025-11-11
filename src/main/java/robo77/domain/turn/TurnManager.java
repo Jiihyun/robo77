@@ -26,6 +26,6 @@ public class TurnManager {
     }
 
     public Player getCurrentPlayer() {
-        return players.getCurrentPlayer();
+        return players.peekFirst();
     }
 }
