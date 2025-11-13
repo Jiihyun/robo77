@@ -8,6 +8,7 @@ import robo77.domain.RoboGame;
 import robo77.domain.card.Card;
 import robo77.domain.card.CardType;
 import robo77.service.GameSessionManager;
+import robo77.service.TurnResult;
 
 public class GameCommandListener extends ListenerAdapter {
 
@@ -29,6 +30,9 @@ public class GameCommandListener extends ListenerAdapter {
         }
         if (event.getName().equals(Command.HAND.getCommand())) {
             handleHand(event, channelId);
+        }
+        if (event.getName().equals(Command.PLAY.getCommand())) {
+            handlePlay(event, channelId);
         }
     }
 
@@ -90,5 +94,72 @@ public class GameCommandListener extends ListenerAdapter {
 
     private boolean gameSessionNotExists(String channelId) {
         return gameSessionManager.findExistingGame(channelId) == null;
+    }
+
+    private void handlePlay(SlashCommandInteractionEvent event, String channelId) {
+        RoboGame game = gameSessionManager.findExistingGame(channelId);
+        if (game == null) {
+            event.reply("⚠️ 진행 중인 게임이 없습니다. `/startgame`으로 먼저 게임을 시작해주세요.").setEphemeral(true).queue();
+            return;
+        }
+
+        String cardValue = event.getOption("card").getAsString();
+        StringBuilder responseBuilder = new StringBuilder();
+
+        try {
+            TurnResult playerResult = processTurn(game, channelId, cardValue, responseBuilder);
+            if (playerResult.isGameOver()) {
+                event.reply(responseBuilder.toString()).queue();
+                return;
+            }
+            processBotTurns(game, channelId, responseBuilder);
+            event.reply(responseBuilder.toString()).queue();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            event.reply("⚠️ " + e.getMessage()).setEphemeral(true).queue();
+        }
+    }
+
+    private void processBotTurns(RoboGame game, String channelId, StringBuilder sb) {
+        while (game.isPlaying() && game.getCurrentPlayer().isBot()) {
+            sb.append("\n--------------------\n");
+
+            TurnResult botResult = gameSessionManager.playTurn(channelId, null);
+            sb.append(formatTurnMessage(botResult));
+
+            if (botResult.isGameOver()) {
+                sb.append(formatGameOverMessage(game.getCurrentScore(), botResult.winner().getName()));
+                gameSessionManager.endGame(channelId);
+                break;
+            }
+        }
+    }
+
+    private TurnResult processTurn(RoboGame game, String channelId, String cardValue, StringBuilder sb) {
+        TurnResult result = gameSessionManager.playTurn(channelId, cardValue);
+
+        sb.append(formatTurnMessage(result));
+
+        if (result.isGameOver()) {
+            sb.append(formatGameOverMessage(game.getCurrentScore(), result.winner().getName()));
+            gameSessionManager.endGame(channelId);
+        }
+        return result;
+    }
+
+    private String formatTurnMessage(TurnResult result) {
+        String playerName = result.currentPlayer().getName();
+        String submitted = cardToDisplayString(result.submittedCard());
+
+        if (playerName.equals("bot")) {
+            return String.format("`%s`(이)가 `%s` 카드를 냈습니다.",
+                    playerName, submitted);
+        }
+        String newCard = cardToDisplayString(result.newCard());
+        return String.format("`%s`(이)가 `%s` 카드를 냈습니다. 새로 받은 카드는 `%s` 입니다.",
+                playerName, submitted, newCard);
+    }
+
+    private String formatGameOverMessage(int sum, String winnerName) {
+        return String.format("\n\n**게임 종료!** \n 합계가 `%d`이므로 `%s`의 승리입니다.", sum, winnerName);
     }
 }

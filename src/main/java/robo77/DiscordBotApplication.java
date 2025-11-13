@@ -3,6 +3,7 @@ package robo77;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import robo77.discord.Command;
 import robo77.discord.GameCommandListener;
@@ -27,9 +28,15 @@ public class DiscordBotApplication {
                 .awaitReady(); // 봇이 완전히 준비될 때까지 대기
 
         for (Command command : Command.values()) {
+            if (command == Command.PLAY) {
+                jda.upsertCommand(command.getCommand(), command.getDescription())
+                        .addOption(OptionType.STRING, "card", "내고 싶은 카드 (예: 3, -10, x2, reverse)", true)
+                        .queue();
+                continue;
+            }
             jda.upsertCommand(command.getCommand(), command.getDescription()).queue();
         }
-        
+
         System.out.println("==================================================");
         System.out.println("로보77 디스코드 봇이 성공적으로 시작되었습니다!");
         System.out.println("==================================================");
