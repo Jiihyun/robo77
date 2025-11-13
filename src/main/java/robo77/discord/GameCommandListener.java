@@ -27,6 +27,9 @@ public class GameCommandListener extends ListenerAdapter {
         if (event.getName().equals(Command.QUIT.getCommand())) {
             handleQuit(event, channelId);
         }
+        if (event.getName().equals(Command.HAND.getCommand())) {
+            handleHand(event, channelId);
+        }
     }
 
     private void handleStartGame(SlashCommandInteractionEvent event, String channelId) {
@@ -42,7 +45,6 @@ public class GameCommandListener extends ListenerAdapter {
                 .queue();
     }
 
-    @NotNull
     private String getReplyMessage(RoboGame roboGame) {
         List<String> hand = roboGame.getCurrentPlayer().getHand().getHoldingCards()
                 .stream()
@@ -64,12 +66,29 @@ public class GameCommandListener extends ListenerAdapter {
         return card.getCardType().getValue();
     }
 
+    private void handleHand(SlashCommandInteractionEvent event, String channelId) {
+        RoboGame roboGame = gameSessionManager.findExistingGame(channelId);
+        if (roboGame == null) {
+            event.reply("⚠️ 진행 중인 게임이 없습니다. `/startgame`으로 먼저 게임을 시작해주세요.").setEphemeral(true).queue();
+            return;
+        }
+        List<String> hand = roboGame.getCurrentPlayer().getHand().getHoldingCards()
+                .stream()
+                .map(this::cardToDisplayString)
+                .toList();
+        event.reply("당신의 손패: " + hand).setEphemeral(true).queue();
+    }
+
     private void handleQuit(SlashCommandInteractionEvent event, String channelId) {
-        if (gameSessionManager.findExistingGame(channelId) == null) {
+        if (gameSessionNotExists(channelId)) {
             event.reply("⚠️ 종료할 게임이 없습니다.").setEphemeral(true).queue();
             return;
         }
         gameSessionManager.endGame(channelId);
         event.reply("✅ 현재 채널의 게임을 종료했습니다. `/startgame`으로 다시 시작할 수 있습니다.").queue();
+    }
+
+    private boolean gameSessionNotExists(String channelId) {
+        return gameSessionManager.findExistingGame(channelId) == null;
     }
 }
