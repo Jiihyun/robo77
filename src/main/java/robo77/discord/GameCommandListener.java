@@ -24,6 +24,9 @@ public class GameCommandListener extends ListenerAdapter {
         if (event.getName().equals(Command.START_GAME.getCommand())) {
             handleStartGame(event, channelId);
         }
+        if (event.getName().equals(Command.QUIT.getCommand())) {
+            handleQuit(event, channelId);
+        }
     }
 
     private void handleStartGame(SlashCommandInteractionEvent event, String channelId) {
@@ -59,5 +62,14 @@ public class GameCommandListener extends ListenerAdapter {
             return String.valueOf(card.getValue());
         }
         return card.getCardType().getValue();
+    }
+
+    private void handleQuit(SlashCommandInteractionEvent event, String channelId) {
+        if (gameSessionManager.findExistingGame(channelId) == null) {
+            event.reply("⚠️ 종료할 게임이 없습니다.").setEphemeral(true).queue();
+            return;
+        }
+        gameSessionManager.endGame(channelId);
+        event.reply("✅ 현재 채널의 게임을 종료했습니다. `/startgame`으로 다시 시작할 수 있습니다.").queue();
     }
 }

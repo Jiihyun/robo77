@@ -17,4 +17,8 @@ public class GameSessionManager {
     public RoboGame findExistingGame(String channelId) {
         return games.get(channelId);
     }
+
+    public void endGame(String channelId) {
+        games.remove(channelId);
+    }
 }
