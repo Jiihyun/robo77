@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import robo77.discord.Command;
 import robo77.discord.GameCommandListener;
 import robo77.service.GameSessionManager;
@@ -21,7 +20,6 @@ public class DiscordBotApplication {
         GameSessionManager gameSessionManager = new GameSessionManager();
 
         JDA jda = JDABuilder.createDefault(botToken)
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // 메시지 내용을 읽기 위한 Intent
                 .setActivity(Activity.playing("로보77")) // 봇의 '플레이 중' 상태 설정
                 .addEventListeners(new GameCommandListener(gameSessionManager)) // 명령어 리스너 추가
                 .build()
