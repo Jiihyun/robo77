@@ -13,6 +13,7 @@ public enum ExceptionMessage {
     CARD_NOT_EXISTS("카드가 더이상 존재하지 않습니다."),
 
     // DISCORD
+    INVALID_DISCORD_BOT_TOKEN("디스코드 봇 토큰이 유효하지 않습니다."),
     COMMAND_NOT_FOUND("존재하지 않는 명령어입니다."),
     ;
 

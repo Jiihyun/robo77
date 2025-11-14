@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import org.jetbrains.annotations.NotNull;
 import robo77.domain.RoboGame;
 import robo77.domain.TurnResult;
 import robo77.domain.card.Card;
@@ -22,7 +21,7 @@ public class GameCommandListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         try {
             Command.from(event.getName())
                     .execute(this, event);
