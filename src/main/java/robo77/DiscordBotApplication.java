@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import robo77.discord.Command;
 import robo77.discord.GameCommandListener;
-import robo77.service.GameSessionManager;
+import robo77.discord.GameSessionManager;
 
 public class DiscordBotApplication {
 
