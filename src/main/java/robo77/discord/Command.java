@@ -1,19 +1,37 @@
 package robo77.discord;
 
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import robo77.exception.ExceptionMessage;
+
 public enum Command {
 
-    START_GAME("startgame", "로보77 게임을 새로 시작합니다."),
-    HAND("hand", "현재 손에 들고 있는 카드를 확인합니다."),
-    PLAY("play", "손에 들고 있는 카드 중에서 한 장을 제출합니다."),
-    QUIT("quit", "게임을 종료합니다."),
-    ;
+    START_GAME("startgame", "로보77 게임을 새로 시작합니다.", GameCommandListener::handleStartGame),
+    HAND("hand", "현재 손에 들고 있는 카드를 확인합니다.", GameCommandListener::handleHand),
+    PLAY("play", "손에 들고 있는 카드 중에서 한 장을 제출합니다.", GameCommandListener::handlePlay),
+    QUIT("quit", "게임을 종료합니다.", GameCommandListener::handleQuit);
 
     private final String command;
     private final String description;
+    private final BiConsumer<GameCommandListener, SlashCommandInteractionEvent> handler;
 
-    Command(String command, String description) {
+    Command(String command, String description,
+            BiConsumer<GameCommandListener, SlashCommandInteractionEvent> handler) {
         this.command = command;
         this.description = description;
+        this.handler = handler;
+    }
+
+    public static Command from(String command) {
+        return Arrays.stream(values())
+                .filter(it -> it.command.equals(command))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.COMMAND_NOT_FOUND.getMessage()));
+    }
+
+    public void execute(GameCommandListener listener, SlashCommandInteractionEvent event) {
+        handler.accept(listener, event);
     }
 
     public String getCommand() {

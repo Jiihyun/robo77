@@ -23,26 +23,18 @@ public class GameCommandListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        String channelId = event.getChannel().getId();
-
-        if (event.getName().equals(Command.START_GAME.getCommand())) {
-            handleStartGame(event, channelId);
-        }
-        if (event.getName().equals(Command.QUIT.getCommand())) {
-            handleQuit(event, channelId);
-        }
-        if (event.getName().equals(Command.HAND.getCommand())) {
-            handleHand(event, channelId);
-        }
-        if (event.getName().equals(Command.PLAY.getCommand())) {
-            handlePlay(event, channelId);
+        try {
+            Command.from(event.getName())
+                    .execute(this, event);
+        } catch (IllegalArgumentException e) {
+            event.reply("⚠️ " + e.getMessage()).setEphemeral(true).queue();
         }
     }
 
-    private void handleStartGame(SlashCommandInteractionEvent event, String channelId) {
+    public void handleStartGame(SlashCommandInteractionEvent event) {
+        String channelId = event.getChannel().getId();
         if (gameSessionManager.findExistingGame(channelId) != null) {
-            event.reply("⚠️ 이미 진행 중인 게임이 있습니다. 게임을 새로 시작하려면 `/quit`을 먼저 실행해주세요.")
-                    .setEphemeral(true).queue();
+            event.reply("⚠️ 이미 진행 중인 게임이 있습니다. 게임을 새로 시작하려면 `/quit`을 먼저 실행해주세요.").setEphemeral(true).queue();
             return;
         }
         String playerName = event.getUser().getName();
@@ -52,22 +44,25 @@ public class GameCommandListener extends ListenerAdapter {
         event.reply(message).setEphemeral(true).queue();
     }
 
-    private void handleHand(SlashCommandInteractionEvent event, String channelId) {
-        executeGameAction(event, channelId, game -> {
+    public void handleHand(SlashCommandInteractionEvent event) {
+        String channelId = event.getChannel().getId();
+        findAndExecuteGameAction(event, channelId, game -> {
             List<String> hand = formatHand(game.getCurrentPlayer());
             event.reply("당신의 손패: " + hand).setEphemeral(true).queue();
         });
     }
 
-    private void handleQuit(SlashCommandInteractionEvent event, String channelId) {
-        executeGameAction(event, channelId, game -> {
+    public void handleQuit(SlashCommandInteractionEvent event) {
+        String channelId = event.getChannel().getId();
+        findAndExecuteGameAction(event, channelId, game -> {
             gameSessionManager.endGame(channelId);
             event.reply("✅ 현재 채널의 게임을 종료했습니다. `/startgame`으로 다시 시작할 수 있습니다.").queue();
         });
     }
 
-    private void handlePlay(SlashCommandInteractionEvent event, String channelId) {
-        executeGameAction(event, channelId, game -> {
+    public void handlePlay(SlashCommandInteractionEvent event) {
+        String channelId = event.getChannel().getId();
+        findAndExecuteGameAction(event, channelId, game -> {
             String cardValue = event.getOption("card").getAsString();
             event.deferReply(true).queue(hook -> {
                 try {
@@ -79,12 +74,10 @@ public class GameCommandListener extends ListenerAdapter {
         });
     }
 
-    private void playTurns(InteractionHook hook, RoboGame game,
-                           String channelId, String cardValue) {
+    private void playTurns(InteractionHook hook, RoboGame game, String channelId, String cardValue) {
         TurnResult playerResult = game.playTurn(new HumanSubmitStrategy(cardValue));
         StringBuilder publicMessage = new StringBuilder(formatPublicTurnMessage(playerResult));
         hook.sendMessage(formatNewCardMessage(playerResult)).queue();
-
         if (handleGameOverIfNeeded(game, channelId, playerResult, publicMessage)) {
             hook.sendMessage(publicMessage.toString()).queue();
             return;
@@ -92,12 +85,12 @@ public class GameCommandListener extends ListenerAdapter {
         processBotTurns(hook, game, channelId, publicMessage);
     }
 
-    private void processBotTurns(InteractionHook hook, RoboGame game,
-                                 String channelId, StringBuilder publicMessage) {
+    private void processBotTurns(InteractionHook hook, RoboGame game, String channelId, StringBuilder publicMessage) {
         List<TurnResult> botResults = game.playBotTurns();
         for (TurnResult botResult : botResults) {
             publicMessage.append("\n--------------------\n");
             publicMessage.append(formatTurnMessage(botResult));
+
             if (handleGameOverIfNeeded(game, channelId, botResult, publicMessage)) {
                 break;
             }
@@ -105,8 +98,7 @@ public class GameCommandListener extends ListenerAdapter {
         hook.sendMessage(publicMessage.toString()).queue();
     }
 
-    private void executeGameAction(SlashCommandInteractionEvent event, String channelId,
-                                   Consumer<RoboGame> gameAction) {
+    private void findAndExecuteGameAction(SlashCommandInteractionEvent event, String channelId, Consumer<RoboGame> gameAction) {
         RoboGame game = gameSessionManager.findExistingGame(channelId);
         if (game == null) {
             event.reply("⚠️ 진행 중인 게임이 없습니다. `/startgame`으로 먼저 게임을 시작해주세요.")
@@ -116,8 +108,7 @@ public class GameCommandListener extends ListenerAdapter {
         gameAction.accept(game);
     }
 
-    private boolean handleGameOverIfNeeded(RoboGame game, String channelId,
-                                           TurnResult result, StringBuilder response) {
+    private boolean handleGameOverIfNeeded(RoboGame game, String channelId, TurnResult result, StringBuilder response) {
         if (!result.isGameOver()) {
             return false;
         }
