@@ -10,7 +10,8 @@ public enum Command {
     START_GAME("startgame", "로보77 게임을 새로 시작합니다.", GameCommandListener::handleStartGame),
     HAND("hand", "현재 손에 들고 있는 카드를 확인합니다.", GameCommandListener::handleHand),
     PLAY("play", "손에 들고 있는 카드 중에서 한 장을 제출합니다.", GameCommandListener::handlePlay),
-    QUIT("quit", "게임을 종료합니다.", GameCommandListener::handleQuit);
+    QUIT("quit", "게임을 종료합니다.", GameCommandListener::handleQuit),
+    GUIDE("guide", "빠르게 게임 규칙을 파악합니다.", GameCommandListener::handleGuide);
 
     private final String command;
     private final String description;

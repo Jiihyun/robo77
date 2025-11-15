@@ -12,6 +12,22 @@ public class DiscordGameOutput {
 
     private static final String ERROR_MESSAGE_PREFIX = "⚠️ ";
 
+    public void showGameGuide(SlashCommandInteractionEvent event) {
+        String message = """
+                📜 간단 게임 규칙 가이드
+                
+                1. 카드 제출 후 합계가 `77`을 초과하거나
+                `11의 배수(11,22,33,44,55,66,77)` 라면,
+                게임이 종료되며 카드를 제출한 플레이어가 패배합니다.
+                
+                2. `reverse` 카드가 사용된 경우, 턴 순서가 반전됩니다.
+                 2인 플레이에서는 같은 플레이어가 한 번 더 낼 수 있습니다.
+                
+                3. `x2` 카드가 사용된 경우, 다음 플레이어는 카드 2장을 연속으로 내야 합니다.
+                """;
+        reply(event, message, true);
+    }
+
     public void showGameStart(SlashCommandInteractionEvent event, RoboGame game) {
         List<String> hand = formatHand(game.getCurrentPlayer());
         String message = """

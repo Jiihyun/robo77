@@ -31,6 +31,10 @@ public class GameCommandListener extends ListenerAdapter {
         }
     }
 
+    public void handleGuide(SlashCommandInteractionEvent event) {
+        discordGameOutput.showGameGuide(event);
+    }
+
     public void handleStartGame(SlashCommandInteractionEvent event) {
         String channelId = event.getChannel().getId();
         if (gameSessionManager.findExistingGame(channelId) != null) {
