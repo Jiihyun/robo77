@@ -3,16 +3,22 @@ package robo77.discord;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import robo77.exception.ExceptionMessage;
+import robo77.view.output.DiscordGameOutput;
 
 public class JDAInitializer {
 
     private static final String ACTIVITY_MESSAGE = "로보77";
 
-    public JDA initialize(GameSessionManager sessionManager, String botToken) throws InterruptedException {
-        return JDABuilder.createDefault(botToken)
-                .setActivity(Activity.playing(ACTIVITY_MESSAGE))
-                .addEventListeners(new GameCommandListener(sessionManager))
-                .build()
-                .awaitReady();
+    public JDA initialize(String botToken, GameSessionManager sessionManager, DiscordGameOutput discordGameOutput) {
+        try {
+            return JDABuilder.createDefault(botToken)
+                    .setActivity(Activity.playing(ACTIVITY_MESSAGE))
+                    .addEventListeners(new GameCommandListener(sessionManager, discordGameOutput))
+                    .build()
+                    .awaitReady();
+        } catch (InterruptedException interruptedException) {
+            throw new RuntimeException(ExceptionMessage.JDA_INIT_INTERRUPTED.getMessage(), interruptedException);
+        }
     }
 }
