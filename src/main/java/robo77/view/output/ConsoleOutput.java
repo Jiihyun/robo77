@@ -10,16 +10,16 @@ public class ConsoleOutput {
     private static final String NEW_LINE = System.lineSeparator();
     private static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
 
-    public void showSumAndHandMessage(Hand hand) {
+    public void showHand(Hand hand) {
         List<String> cards = hand.getHoldingCards().stream()
                 .map(CardRenderer::cardToDisplayString)
                 .toList();
-        System.out.println(NEW_LINE + "당신의 카드: " + cards);
+        System.out.println(NEW_LINE + "당신의 손패: " + cards);
     }
 
     public void showSubmittedCard(String name, Card card) {
         String submittedCard = CardRenderer.cardToDisplayString(card);
-        System.out.println(NEW_LINE + name + "님께서 " + submittedCard + "를 제출하셨습니다.");
+        System.out.println(NEW_LINE + name + "(이)가 " + submittedCard + "카드를 냈습니다.");
     }
 
     public void showWinner(int sum, String winner) {

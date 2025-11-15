@@ -49,7 +49,7 @@ public class RoboGameController {
 
     private void playPlayerTurn(RoboGame roboGame, Player player) {
         TurnResult result = retryOnInvalidInput(() -> {
-            consoleOutput.showSumAndHandMessage(player.getHand());
+            consoleOutput.showHand(player.getHand());
             String cardValue = consoleInput.readCardToSubmit();
             return roboGame.playTurn(new HumanSubmitStrategy(cardValue));
         });
