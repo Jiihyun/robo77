@@ -9,10 +9,15 @@ public class CommandRegistrar {
     public void register(JDA jda) {
         for (Command command : Command.values()) {
             CommandCreateAction commandCreateAction = jda.upsertCommand(command.getCommand(), command.getDescription());
-            if (command == Command.PLAY) {
-                commandCreateAction.addOption(OptionType.STRING, "card", "내고 싶은 카드 (예: 3, -10, x2, reverse)", true);
-            }
+            addOptionIfCommandIsPlay(command, commandCreateAction);
             commandCreateAction.queue();
+        }
+    }
+
+    private static void addOptionIfCommandIsPlay(Command command, CommandCreateAction commandCreateAction) {
+        if (command == Command.PLAY) {
+            commandCreateAction.addOption(OptionType.STRING, "card",
+                    "제출할 카드를 입력해주세요. (예: 3, -10, x2, reverse)", true);
         }
     }
 }
