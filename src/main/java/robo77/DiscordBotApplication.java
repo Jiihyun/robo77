@@ -8,7 +8,7 @@ import robo77.discord.config.DiscordConfig;
 import robo77.view.output.DiscordGameOutput;
 
 public class DiscordBotApplication {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         String token = DiscordConfig.getBotToken();
         GameSessionManager sessionManager = new GameSessionManager();
         DiscordGameOutput discordGameOutput = new DiscordGameOutput();
