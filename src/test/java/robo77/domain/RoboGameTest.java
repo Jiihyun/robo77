@@ -1,7 +1,6 @@
 package robo77.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import robo77.domain.card.Card;
 import robo77.domain.card.CardGenerator;
 import robo77.domain.card.CardType;
 import robo77.domain.card.Deck;
+import robo77.domain.card.submitstrategy.HumanSubmitStrategy;
 import robo77.domain.player.Player;
 import robo77.domain.player.Players;
 import robo77.domain.turn.TurnManager;
@@ -80,7 +80,23 @@ class RoboGameTest {
     }
 
     @Test
-    void 카드를_처리하면_점수가_변경되고_현재_플레이어가_갱신된다() {
+    void 봇의_턴에서_규칙에_맞는_카드를_제출한다() {
+        // given
+        Deck deck = new Deck(CardGenerator.createCards());
+        Player player1 = Player.byBot(createHand());
+        Player player2 = new Player("player1", createHand());
+        TurnManager turnManager = new TurnManager(new Players(List.of(player1, player2)));
+        Referee referee = new Referee();
+
+        RoboGame roboGame = new RoboGame(deck, turnManager, referee);
+        // when
+        List<TurnResult> turnResults = roboGame.playBotTurns();
+        // then
+        assertThat(turnResults.getFirst().submittedCard().getValue()).isEqualTo(2);
+    }
+
+    @Test
+    void 카드를_뽑으면_Deck에서_카드가_반환된다() {
         // given
         Deck deck = new Deck(CardGenerator.createCards());
         Player player1 = new Player("player1", createHand());
@@ -89,30 +105,10 @@ class RoboGameTest {
         Referee referee = new Referee();
 
         RoboGame roboGame = new RoboGame(deck, turnManager, referee);
-
-        Card card = new Card(CardType.SUM, 2);
         // when
-        roboGame.processCard(card);
+        TurnResult turnResult = roboGame.playTurn(new HumanSubmitStrategy("11"));
         // then
-        assertAll(
-                () -> assertThat(roboGame.getCurrentScore()).isEqualTo(2),
-                () -> assertThat(roboGame.getCurrentPlayer()).isEqualTo(player2)
-        );
-    }
-
-    @Test
-    void 카드를_뽑으면_Deck에서_카드가_반환된다() {
-        // given
-        Deck deck = new Deck(CardGenerator.createCards());
-        Player player = new Player("player1", createHand());
-        TurnManager turnManager = new TurnManager(new Players(List.of(player)));
-        Referee referee = new Referee();
-
-        RoboGame roboGame = new RoboGame(deck, turnManager, referee);
-        // when
-        Card card = roboGame.drawCard();
-        // then
-        assertThat(card).isNotNull();
+        assertThat(turnResult.submittedCard().getValue()).isEqualTo(11);
     }
 
     @Test
@@ -125,7 +121,7 @@ class RoboGameTest {
         Referee referee = new Referee();
 
         RoboGame roboGame = new RoboGame(deck, turnManager, referee);
-        roboGame.processCard(new Card(CardType.SUM, 77));
+        roboGame.playTurn(new HumanSubmitStrategy("11"));
         // when
         Player winner = roboGame.getWinner();
         // then
@@ -138,7 +134,7 @@ class RoboGameTest {
                 new Card(CardType.SUM, 3),
                 new Card(CardType.SUM, 4),
                 new Card(CardType.SUM, 5),
-                new Card(CardType.SUM, 6)
+                new Card(CardType.SUM, 11)
         )));
     }
 }
