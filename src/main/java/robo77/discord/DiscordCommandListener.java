@@ -10,16 +10,16 @@ import robo77.domain.TurnResult;
 import robo77.domain.card.submitstrategy.HumanSubmitStrategy;
 import robo77.domain.player.Player;
 import robo77.exception.ExceptionMessage;
-import robo77.view.output.DiscordGameOutput;
+import robo77.view.output.DiscordOutput;
 
-public class GameCommandListener extends ListenerAdapter {
+public class DiscordCommandListener extends ListenerAdapter {
 
     private final GameSessionManager gameSessionManager;
-    private final DiscordGameOutput discordGameOutput;
+    private final DiscordOutput discordOutput;
 
-    public GameCommandListener(GameSessionManager gameSessionManager, DiscordGameOutput discordGameOutput) {
+    public DiscordCommandListener(GameSessionManager gameSessionManager, DiscordOutput discordOutput) {
         this.gameSessionManager = gameSessionManager;
-        this.discordGameOutput = discordGameOutput;
+        this.discordOutput = discordOutput;
     }
 
     @Override
@@ -27,34 +27,34 @@ public class GameCommandListener extends ListenerAdapter {
         try {
             Command.from(event.getName()).execute(this, event);
         } catch (IllegalArgumentException e) {
-            discordGameOutput.showError(event, ExceptionMessage.COMMAND_NOT_FOUND.getMessage());
+            discordOutput.showError(event, ExceptionMessage.COMMAND_NOT_FOUND.getMessage());
         }
     }
 
     public void handleGuide(SlashCommandInteractionEvent event) {
-        discordGameOutput.showGameGuide(event);
+        discordOutput.showGameGuide(event);
     }
 
     public void handleStartGame(SlashCommandInteractionEvent event) {
         String channelId = event.getChannel().getId();
         if (gameSessionManager.findExistingGame(channelId) != null) {
-            discordGameOutput.showError(event, ExceptionMessage.GAME_ALREADY_EXISTS.getMessage());
+            discordOutput.showError(event, ExceptionMessage.GAME_ALREADY_EXISTS.getMessage());
             return;
         }
         String playerName = event.getUser().getName();
         RoboGame roboGame = gameSessionManager.startGame(channelId, playerName);
-        discordGameOutput.showGameStart(event, roboGame);
+        discordOutput.showGameStart(event, roboGame);
     }
 
     public void handleHand(SlashCommandInteractionEvent event) {
         findAndExecuteGameAction(event, game
-                -> discordGameOutput.showHand(event, game.getCurrentPlayer()));
+                -> discordOutput.showHand(event, game.getCurrentPlayer()));
     }
 
     public void handleQuit(SlashCommandInteractionEvent event) {
         findAndExecuteGameAction(event, game -> {
             gameSessionManager.endGame(event.getChannel().getId());
-            discordGameOutput.showGameQuit(event);
+            discordOutput.showGameQuit(event);
         });
     }
 
@@ -65,7 +65,7 @@ public class GameCommandListener extends ListenerAdapter {
                 try {
                     playTurns(hook, game, event.getChannel().getId(), cardValue);
                 } catch (IllegalArgumentException illegalArgumentException) {
-                    discordGameOutput.showError(event, illegalArgumentException.getMessage());
+                    discordOutput.showError(event, illegalArgumentException.getMessage());
                 }
             });
         });
@@ -73,8 +73,8 @@ public class GameCommandListener extends ListenerAdapter {
 
     private void playTurns(InteractionHook hook, RoboGame game, String channelId, String cardValue) {
         TurnResult playerResult = game.playTurn(new HumanSubmitStrategy(cardValue));
-        discordGameOutput.showSubmittedCard(hook, playerResult);
-        discordGameOutput.showNewCard(hook, playerResult);
+        discordOutput.showSubmittedCard(hook, playerResult);
+        discordOutput.showNewCard(hook, playerResult);
         if (handleGameOverIfNeeded(hook, game, channelId, playerResult)) {
             return;
         }
@@ -86,7 +86,7 @@ public class GameCommandListener extends ListenerAdapter {
             return false;
         }
         Player winner = game.getWinner();
-        discordGameOutput.showWinner(hook, game.getCurrentScore(), winner.getName());
+        discordOutput.showWinner(hook, game.getCurrentScore(), winner.getName());
         gameSessionManager.endGame(channelId);
         return true;
     }
@@ -94,7 +94,7 @@ public class GameCommandListener extends ListenerAdapter {
     private void processBotTurns(InteractionHook hook, RoboGame game, String channelId) {
         List<TurnResult> botResults = game.playBotTurns();
         for (TurnResult botResult : botResults) {
-            discordGameOutput.showSubmittedCard(hook, botResult);
+            discordOutput.showSubmittedCard(hook, botResult);
             if (handleGameOverIfNeeded(hook, game, channelId, botResult)) {
                 break;
             }
@@ -105,7 +105,7 @@ public class GameCommandListener extends ListenerAdapter {
         String channelId = event.getChannel().getId();
         RoboGame game = gameSessionManager.findExistingGame(channelId);
         if (game == null) {
-            discordGameOutput.showError(event, ExceptionMessage.NO_GAME_IN_PROGRESS.getMessage());
+            discordOutput.showError(event, ExceptionMessage.NO_GAME_IN_PROGRESS.getMessage());
             return;
         }
         gameAction.accept(game);

@@ -26,16 +26,16 @@ import robo77.domain.TurnResult;
 import robo77.domain.card.submitstrategy.HumanSubmitStrategy;
 import robo77.domain.player.Player;
 import robo77.exception.ExceptionMessage;
-import robo77.view.output.DiscordGameOutput;
+import robo77.view.output.DiscordOutput;
 
 @ExtendWith(MockitoExtension.class)
-class GameCommandListenerTest {
+class DiscordCommandListenerTest {
 
     @Mock
     private GameSessionManager gameSessionManager;
 
     @Mock
-    private DiscordGameOutput discordGameOutput;
+    private DiscordOutput discordOutput;
 
     @Mock
     private SlashCommandInteractionEvent event;
@@ -58,14 +58,14 @@ class GameCommandListenerTest {
     @Mock
     private OptionMapping optionMapping;
 
-    private GameCommandListener listener;
+    private DiscordCommandListener listener;
 
     private static final String CHANNEL_ID = "123456789";
     private static final String PLAYER_NAME = "TestPlayer";
 
     @BeforeEach
     void setUp() {
-        listener = new GameCommandListener(gameSessionManager, discordGameOutput);
+        listener = new DiscordCommandListener(gameSessionManager, discordOutput);
     }
 
     private void setupBasicEventMocks() {
@@ -85,7 +85,7 @@ class GameCommandListenerTest {
         // when
         listener.onSlashCommandInteraction(event);
         // then
-        verify(discordGameOutput).showError(event, ExceptionMessage.COMMAND_NOT_FOUND.getMessage());
+        verify(discordOutput).showError(event, ExceptionMessage.COMMAND_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -100,8 +100,8 @@ class GameCommandListenerTest {
         listener.onSlashCommandInteraction(event);
         // then
         verify(gameSessionManager).startGame(CHANNEL_ID, PLAYER_NAME);
-        verify(discordGameOutput).showGameStart(event, game);
-        verify(discordGameOutput, never()).showError(any(), anyString());
+        verify(discordOutput).showGameStart(event, game);
+        verify(discordOutput, never()).showError(any(), anyString());
     }
 
     @Test
@@ -114,7 +114,7 @@ class GameCommandListenerTest {
         listener.onSlashCommandInteraction(event);
         // then
         verify(gameSessionManager, never()).startGame(anyString(), anyString());
-        verify(discordGameOutput).showError(event, ExceptionMessage.GAME_ALREADY_EXISTS.getMessage());
+        verify(discordOutput).showError(event, ExceptionMessage.GAME_ALREADY_EXISTS.getMessage());
     }
 
     @Test
@@ -128,7 +128,7 @@ class GameCommandListenerTest {
         // when
         listener.onSlashCommandInteraction(event);
         // then
-        verify(discordGameOutput).showHand(event, currentPlayer);
+        verify(discordOutput).showHand(event, currentPlayer);
     }
 
     @Test
@@ -140,7 +140,7 @@ class GameCommandListenerTest {
         // when
         listener.onSlashCommandInteraction(event);
         // then
-        verify(discordGameOutput).showError(event, ExceptionMessage.NO_GAME_IN_PROGRESS.getMessage());
+        verify(discordOutput).showError(event, ExceptionMessage.NO_GAME_IN_PROGRESS.getMessage());
     }
 
     @Test
@@ -153,7 +153,7 @@ class GameCommandListenerTest {
         listener.onSlashCommandInteraction(event);
         // then
         verify(gameSessionManager).endGame(CHANNEL_ID);
-        verify(discordGameOutput).showGameQuit(event);
+        verify(discordOutput).showGameQuit(event);
     }
 
     @Test
@@ -180,8 +180,8 @@ class GameCommandListenerTest {
         listener.onSlashCommandInteraction(event);
         // then
         verify(game).playTurn(any(HumanSubmitStrategy.class));
-        verify(discordGameOutput).showSubmittedCard(hook, playerResult);
-        verify(discordGameOutput).showNewCard(hook, playerResult);
+        verify(discordOutput).showSubmittedCard(hook, playerResult);
+        verify(discordOutput).showNewCard(hook, playerResult);
         verify(game).playBotTurns();
     }
 
@@ -212,7 +212,7 @@ class GameCommandListenerTest {
         // when
         listener.onSlashCommandInteraction(event);
         // then
-        verify(discordGameOutput).showWinner(hook, 100, "bot");
+        verify(discordOutput).showWinner(hook, 100, "bot");
         verify(gameSessionManager).endGame(CHANNEL_ID);
         verify(game, never()).playBotTurns();
     }
@@ -250,8 +250,8 @@ class GameCommandListenerTest {
         listener.onSlashCommandInteraction(event);
         // then
         verify(game).playBotTurns();
-        verify(discordGameOutput).showSubmittedCard(hook, botResult);
-        verify(discordGameOutput).showWinner(hook, 55, PLAYER_NAME);
+        verify(discordOutput).showSubmittedCard(hook, botResult);
+        verify(discordOutput).showWinner(hook, 55, PLAYER_NAME);
         verify(gameSessionManager).endGame(CHANNEL_ID);
     }
 
@@ -274,6 +274,6 @@ class GameCommandListenerTest {
         // when
         listener.onSlashCommandInteraction(event);
         // then
-        verify(discordGameOutput).showError(event, ExceptionMessage.INVALID_CARD.getMessage());
+        verify(discordOutput).showError(event, ExceptionMessage.INVALID_CARD.getMessage());
     }
 }

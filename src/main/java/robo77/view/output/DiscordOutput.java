@@ -8,14 +8,14 @@ import robo77.domain.TurnResult;
 import robo77.domain.player.Player;
 import robo77.view.CardRenderer;
 
-public class DiscordGameOutput {
+public class DiscordOutput {
 
     private static final String ERROR_MESSAGE_PREFIX = "⚠️ ";
 
     public void showGameGuide(SlashCommandInteractionEvent event) {
         String message = """
                 📜 간단 게임 규칙 가이드
-                
+                ®
                 1. 카드 제출 후 합계가 `77`을 초과하거나
                 `11의 배수(11,22,33,44,55,66,77)` 라면,
                 게임이 종료되며 카드를 제출한 플레이어가 패배합니다.

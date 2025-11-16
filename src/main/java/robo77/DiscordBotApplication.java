@@ -5,15 +5,15 @@ import robo77.discord.CommandRegistrar;
 import robo77.discord.GameSessionManager;
 import robo77.discord.JDAInitializer;
 import robo77.discord.config.DiscordConfig;
-import robo77.view.output.DiscordGameOutput;
+import robo77.view.output.DiscordOutput;
 
 public class DiscordBotApplication {
     public static void main(String[] args) {
         String token = DiscordConfig.getBotToken();
         GameSessionManager sessionManager = new GameSessionManager();
-        DiscordGameOutput discordGameOutput = new DiscordGameOutput();
+        DiscordOutput discordOutput = new DiscordOutput();
         JDAInitializer initializer = new JDAInitializer();
-        JDA jda = initializer.initialize(token, sessionManager, discordGameOutput);
+        JDA jda = initializer.initialize(token, sessionManager, discordOutput);
         CommandRegistrar registrar = new CommandRegistrar();
         registrar.register(jda);
     }

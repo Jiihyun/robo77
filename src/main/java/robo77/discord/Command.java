@@ -7,18 +7,18 @@ import robo77.exception.ExceptionMessage;
 
 public enum Command {
 
-    START_GAME("startgame", "로보77 게임을 새로 시작합니다.", GameCommandListener::handleStartGame),
-    HAND("hand", "현재 손에 들고 있는 카드를 확인합니다.", GameCommandListener::handleHand),
-    PLAY("play", "손에 들고 있는 카드 중에서 한 장을 제출합니다.", GameCommandListener::handlePlay),
-    QUIT("quit", "게임을 종료합니다.", GameCommandListener::handleQuit),
-    GUIDE("guide", "빠르게 게임 규칙을 파악합니다.", GameCommandListener::handleGuide);
+    START_GAME("startgame", "로보77 게임을 새로 시작합니다.", DiscordCommandListener::handleStartGame),
+    HAND("hand", "현재 손에 들고 있는 카드를 확인합니다.", DiscordCommandListener::handleHand),
+    PLAY("play", "손에 들고 있는 카드 중에서 한 장을 제출합니다.", DiscordCommandListener::handlePlay),
+    QUIT("quit", "게임을 종료합니다.", DiscordCommandListener::handleQuit),
+    GUIDE("guide", "빠르게 게임 규칙을 파악합니다.", DiscordCommandListener::handleGuide);
 
     private final String command;
     private final String description;
-    private final BiConsumer<GameCommandListener, SlashCommandInteractionEvent> handler;
+    private final BiConsumer<DiscordCommandListener, SlashCommandInteractionEvent> handler;
 
     Command(String command, String description,
-            BiConsumer<GameCommandListener, SlashCommandInteractionEvent> handler) {
+            BiConsumer<DiscordCommandListener, SlashCommandInteractionEvent> handler) {
         this.command = command;
         this.description = description;
         this.handler = handler;
@@ -31,7 +31,7 @@ public enum Command {
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.COMMAND_NOT_FOUND.getMessage()));
     }
 
-    public void execute(GameCommandListener listener, SlashCommandInteractionEvent event) {
+    public void execute(DiscordCommandListener listener, SlashCommandInteractionEvent event) {
         handler.accept(listener, event);
     }
 
