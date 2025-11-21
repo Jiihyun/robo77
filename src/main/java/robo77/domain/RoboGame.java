@@ -1,0 +1,81 @@
+package robo77.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+import robo77.domain.card.Card;
+import robo77.domain.card.CardGenerator;
+import robo77.domain.card.Deck;
+import robo77.domain.card.SubmitCardStrategy;
+import robo77.domain.card.submitstrategy.BotSubmitStrategy;
+import robo77.domain.player.Player;
+import robo77.domain.turn.TurnManager;
+
+public class RoboGame {
+
+    private final Deck deck;
+    private final TurnManager turnManager;
+    private final Referee referee;
+
+    public RoboGame(Deck deck, TurnManager turnManager, Referee referee) {
+        this.deck = deck;
+        this.turnManager = turnManager;
+        this.referee = referee;
+    }
+
+    public static RoboGame start(String playerName) {
+        Deck deck = new Deck(CardGenerator.createCards());
+        TurnManager turnManager = TurnManager.createTurn(playerName, deck);
+        Referee referee = new Referee();
+        return new RoboGame(deck, turnManager, referee);
+    }
+
+    public Player getCurrentPlayer() {
+        return turnManager.getCurrentPlayer();
+    }
+
+    public int getCurrentScore() {
+        return referee.noticeScore();
+    }
+
+    public boolean isPlaying() {
+        return !referee.shouldEndGame();
+    }
+
+    public List<TurnResult> playBotTurns() {
+        List<TurnResult> botResults = new ArrayList<>();
+
+        while (isPlaying() && getCurrentPlayer().isBot()) {
+            TurnResult result = playTurn(new BotSubmitStrategy());
+            botResults.add(result);
+            if (result.isGameOver()) {
+                break;
+            }
+        }
+        return botResults;
+    }
+
+    public TurnResult playTurn(SubmitCardStrategy strategy) {
+        Player currentPlayer = getCurrentPlayer();
+        Card submittedCard = processSubmitCard(strategy, currentPlayer);
+        Card newCard = pickNewCard(currentPlayer);
+        boolean isGameOver = !isPlaying();
+        return new TurnResult(currentPlayer, submittedCard, newCard, isGameOver);
+    }
+
+    private Card processSubmitCard(SubmitCardStrategy strategy, Player currentPlayer) {
+        Card submittedCard = strategy.submit(currentPlayer);
+        referee.recordScore(submittedCard.getValue());
+        turnManager.findNextTurnPlayer(submittedCard);
+        return submittedCard;
+    }
+
+    private Card pickNewCard(Player currentPlayer) {
+        Card newCard = deck.drawCard();
+        currentPlayer.pickCard(newCard);
+        return newCard;
+    }
+
+    public Player getWinner() {
+        return referee.determineWinner(turnManager);
+    }
+}
