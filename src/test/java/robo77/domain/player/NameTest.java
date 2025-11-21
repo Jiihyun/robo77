@@ -28,7 +28,7 @@ class NameTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"asdfghjklll", "a"})
+    @ValueSource(strings = {"asdfghjklpoiuytrewqzxcvbnmlkjuiop", "a"})
     void 플레이어_이름의_길이가_범위_초과시_예외가_발생한다(String name) {
         // when & then
         assertThatThrownBy(() -> new Name(name))
@@ -37,7 +37,7 @@ class NameTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"지현", "a c", "ab+cd"})
+    @ValueSource(strings = {"지현", "a c", "ab+cd", "a..b"})
     void 잘못된_형식의_플레이어_이름이면_예외가_발생한다(String name) {
         // when & then
         assertThatThrownBy(() -> new Name(name))

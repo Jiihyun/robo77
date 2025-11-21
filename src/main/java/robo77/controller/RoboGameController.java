@@ -1,20 +1,22 @@
 package robo77.controller;
 
+import java.util.List;
 import java.util.function.Supplier;
 import robo77.domain.RoboGame;
-import robo77.domain.card.Card;
+import robo77.domain.TurnResult;
+import robo77.domain.card.submitstrategy.HumanSubmitStrategy;
 import robo77.domain.player.Player;
-import robo77.view.InputView;
-import robo77.view.OutputView;
+import robo77.view.ConsoleInput;
+import robo77.view.output.ConsoleOutput;
 
 public class RoboGameController {
 
-    private final InputView inputView;
-    private final OutputView outputView;
+    private final ConsoleInput consoleInput;
+    private final ConsoleOutput consoleOutput;
 
-    public RoboGameController(InputView inputView, OutputView outputView) {
-        this.inputView = inputView;
-        this.outputView = outputView;
+    public RoboGameController(ConsoleInput consoleInput, ConsoleOutput consoleOutput) {
+        this.consoleInput = consoleInput;
+        this.consoleOutput = consoleOutput;
     }
 
     public void run() {
@@ -24,41 +26,43 @@ public class RoboGameController {
 
     private RoboGame initGame() {
         return retryOnInvalidInput(() -> {
-            String playerName = inputView.readPlayerName();
+            String playerName = consoleInput.readPlayerName();
             return RoboGame.start(playerName);
         });
     }
 
-    private void playGame(RoboGame roboGame) {
-        while (roboGame.isPlaying()) {
-            playTurn(roboGame);
+    private void playGame(RoboGame game) {
+        while (game.isPlaying()) {
+            playTurn(game);
         }
-        showResult(roboGame);
+        showResult(game);
     }
 
-    private void playTurn(RoboGame roboGame) {
-        Player currentPlayer = roboGame.getCurrentPlayer();
-        Card submittedCard = getSubmittedCard(currentPlayer);
-        outputView.showSubmittedCard(currentPlayer.getName(), submittedCard);
-        Card newCard = roboGame.drawCard();
-        currentPlayer.pickCard(newCard);
-        roboGame.processCard(submittedCard);
+    private void playTurn(RoboGame game) {
+        Player player = game.getCurrentPlayer();
+        if (player.isBot()) {
+            playBotTurns(game, player);
+            return;
+        }
+        playPlayerTurn(game, player);
     }
 
-    private Card getSubmittedCard(Player currentPlayer) {
-        if (currentPlayer.isBot()) {
-            return currentPlayer.submitCardByBot();
-        }
-        return retryOnInvalidInput(() -> {
-            outputView.showSumAndHandMessage(currentPlayer.getHand());
-            String submittedCard = inputView.readCardToSubmit();
-            return currentPlayer.submitCard(Card.from(submittedCard));
+    private void playPlayerTurn(RoboGame roboGame, Player player) {
+        TurnResult result = retryOnInvalidInput(() -> {
+            consoleOutput.showHand(player.getHand());
+            String cardValue = consoleInput.readCardToSubmit();
+            return roboGame.playTurn(new HumanSubmitStrategy(cardValue));
         });
+        consoleOutput.showSubmittedCard(player.getName(), result.submittedCard());
+    }
+
+    private void playBotTurns(RoboGame roboGame, Player player) {
+        List<TurnResult> botResults = roboGame.playBotTurns();
+        botResults.forEach(result -> consoleOutput.showSubmittedCard(player.getName(), result.submittedCard()));
     }
 
     private void showResult(RoboGame roboGame) {
-        Player winner = roboGame.getWinner();
-        outputView.showWinner(roboGame.getCurrentScore(), winner.getName());
+        consoleOutput.showWinner(roboGame.getCurrentScore(), roboGame.getWinner().getName());
     }
 
     public <T> T retryOnInvalidInput(Supplier<T> input) {
@@ -66,7 +70,7 @@ public class RoboGameController {
             try {
                 return input.get();
             } catch (IllegalArgumentException e) {
-                outputView.showError(e.getMessage());
+                consoleOutput.showError(e.getMessage());
             }
         }
     }

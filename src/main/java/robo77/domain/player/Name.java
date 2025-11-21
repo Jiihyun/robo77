@@ -7,8 +7,8 @@ import robo77.exception.ExceptionMessage;
 public class Name {
 
     private static final int MIN_LENGTH = 2;
-    private static final int MAX_LENGTH = 10;
-    private static final Pattern FORMAT_PATTERN = Pattern.compile("^[0-9a-z]+$");
+    private static final int MAX_LENGTH = 32;
+    private static final Pattern FORMAT_PATTERN = Pattern.compile("^(?!.*\\.\\.)[0-9a-z._]+$");
 
     private final String value;
 
